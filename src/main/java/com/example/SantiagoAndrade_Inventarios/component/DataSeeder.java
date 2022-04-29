@@ -33,7 +33,6 @@ public class DataSeeder {
 	@Autowired
 	private StoreRepository storeRepository;
 	
-	private static final Logger log = LoggerFactory.getLogger(SantiagoAndradeInventariosApplication.class);
 	public DataSeeder() {
 		System.out.println("PostContructImpl Constructor called");
 	}
@@ -59,7 +58,6 @@ public class DataSeeder {
 	    while (prodsit.hasNext()) {
 	    	JsonNode prodJson = prodsit.next();
 	    	Product prod = mapper.readValue(prodJson.toString(),Product.class);
-	    	log.info (prodJson.toString());
 	    	productRepository.save(prod);
 	    }
 		

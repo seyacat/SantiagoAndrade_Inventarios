@@ -12,10 +12,9 @@ import javax.persistence.ManyToMany;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Entity // This tells Hibernate to make a table out of this class
+@Entity 
 public class Product {
   @Id
-  //@GeneratedValue(strategy=GenerationType.AUTO)
   private Integer id;
   private String cod;
   private String name;
