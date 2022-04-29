@@ -32,16 +32,4 @@ public class SantiagoAndradeInventariosApplication {
 	    return new RestTemplate();
 	}
 	
-	@Bean
-	public CommandLineRunner run(RestTemplate restTemplate) throws Exception {
-		
-		
-		
-
-		return args -> {
-			
-			//log.info(quote.toString());
-			//log.info(objects.toString());
-		};
-	}
 }
