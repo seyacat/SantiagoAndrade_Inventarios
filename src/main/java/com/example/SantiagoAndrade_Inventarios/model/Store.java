@@ -13,20 +13,26 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Entity // This tells Hibernate to make a table out of this class
-public class Product {
+public class Store {
   @Id
-  //@GeneratedValue(strategy=GenerationType.AUTO)
+  @GeneratedValue(strategy=GenerationType.AUTO)
   private Integer id;
-  private String cod;
   private String name;
-  private BigDecimal price;
-  private Integer stock;
   
-  @ManyToMany(mappedBy = "products")
-  Set<Store> stores;
-
-  public Product() {
+  @ManyToMany
+  Set<Product> products;
+  
+  public Set<Product> getProducts() {
+	  return products;
+  }
+  
+  public Store() {
 	 
+  }
+  
+  public Store(Integer id, String name) {
+		 this.id = id;
+		 this.name = name;
   }
   
   public Integer getId() {
@@ -37,14 +43,6 @@ public class Product {
     this.id = id;
   }
   
-  public String getCod() {
-    return cod;
-  }
-
-  public void setCod(String cod) {
-    this.cod = cod;
-  }
-  
   public String getName() {
     return name;
   }
@@ -52,20 +50,5 @@ public class Product {
   public void setName(String name) {
     this.name = name;
   }
-  
-  public BigDecimal getPrice() {
-    return price;
-  }
 
-  public void setPrice(BigDecimal price) {
-    this.price = price;
-  }
-
-  public Integer getStock() {
-    return stock;
-  }
-
-  public void setStock(Integer stock) {
-    this.stock = stock;
-  }
 }
