@@ -1,28 +1,45 @@
-package com.example.mysqldata;
+package com.example.SantiagoAndrade_Inventarios.model;
+
+import java.math.BigDecimal;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 @Entity // This tells Hibernate to make a table out of this class
-public class Producto {
+public class Product {
   @Id
   @GeneratedValue(strategy=GenerationType.AUTO)
   private Integer id;
   private String cod;
   private String name;
-  private Float price;
+  private BigDecimal price;
   private Integer stock;
-
-  /*public Integer getId() {
+  
+  public Product() {
+	 
+  }
+  
+  public Integer getId() {
     return id;
   }
 
   public void setId(Integer id) {
     this.id = id;
   }
+  
+  public String getCod() {
+    return cod;
+  }
 
+  public void setCod(String cod) {
+    this.cod = cod;
+  }
+  
   public String getName() {
     return name;
   }
@@ -30,12 +47,20 @@ public class Producto {
   public void setName(String name) {
     this.name = name;
   }
-
-  public String getEmail() {
-    return email;
+  
+  public BigDecimal getPrice() {
+    return price;
   }
 
-  public void setEmail(String email) {
-    this.email = email;
-  }*/
+  public void setPrice(BigDecimal price) {
+    this.price = price;
+  }
+
+  public Integer getStock() {
+    return stock;
+  }
+
+  public void setName(Integer stock) {
+    this.stock = stock;
+  }
 }

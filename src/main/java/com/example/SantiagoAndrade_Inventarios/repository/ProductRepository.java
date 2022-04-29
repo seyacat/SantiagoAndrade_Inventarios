@@ -1,12 +1,12 @@
-package com.example.mysqldata;
+package com.example.SantiagoAndrade_Inventarios.repository;
 
 import org.springframework.data.repository.CrudRepository;
 
-import com.example.mysqldata.Producto;
+import com.example.SantiagoAndrade_Inventarios.model.Product;
 
 // This will be AUTO IMPLEMENTED by Spring into a Bean called userRepository
 // CRUD refers Create, Read, Update, Delete
 
-public interface ProductoRepository extends CrudRepository<Producto, Integer> {
+public interface ProductRepository extends CrudRepository<Product, Integer> {
 
 }
