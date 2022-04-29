@@ -18,6 +18,7 @@ public class Store {
   @GeneratedValue(strategy=GenerationType.AUTO)
   private Integer id;
   private String name;
+  private String cod;
   
   @ManyToMany
   Set<Product> products;
@@ -30,8 +31,9 @@ public class Store {
 	 
   }
   
-  public Store(Integer id, String name) {
+  public Store(Integer id, String cod, String name) {
 		 this.id = id;
+		 this.cod = cod;
 		 this.name = name;
   }
   
@@ -49,6 +51,13 @@ public class Store {
 
   public void setName(String name) {
     this.name = name;
+  }
+  public String getCod() {
+	    return cod;
+  }
+
+  public void setCod(String cod) {
+    this.cod = cod;
   }
 
 }

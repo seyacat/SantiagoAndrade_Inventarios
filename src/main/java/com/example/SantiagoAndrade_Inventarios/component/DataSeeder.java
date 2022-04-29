@@ -41,10 +41,10 @@ public class DataSeeder {
 	public void runAfterObjectCreated() throws JsonMappingException, JsonProcessingException {
 		
 		//GENERATE STORES
-		storeRepository.save ( new Store( 1, "Don Pepe" ) );
-		storeRepository.save ( new Store( 2, "Mi Tiendita Cool" ) );
-		storeRepository.save ( new Store( 3, "Todo a Dolar" ) );
-		storeRepository.save ( new Store( 4, "El Ofertón" ) );
+		storeRepository.save ( new Store( 1, "T001" , "Don Pepe" ) );
+		storeRepository.save ( new Store( 2, "T002", "Mi Tiendita Cool" ) );
+		storeRepository.save ( new Store( 3, "T003", "Todo a Dolar" ) );
+		storeRepository.save ( new Store( 4, "T004", "El Ofertón" ) );
 			
 		//RETRIVE PRODUCTS FROM EXTERNAL MOCH.IO
 	    ObjectMapper mapper = new ObjectMapper();
