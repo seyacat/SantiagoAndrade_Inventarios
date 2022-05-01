@@ -5,8 +5,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -16,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.SantiagoAndrade_Inventarios.SantiagoAndradeInventariosApplication;
 import com.example.SantiagoAndrade_Inventarios.model.Client;
 import com.example.SantiagoAndrade_Inventarios.model.Order;
 import com.example.SantiagoAndrade_Inventarios.model.Product;
@@ -33,6 +30,8 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 @Controller 
 @RequestMapping(path="/order") 
 public class OrderController {
@@ -48,14 +47,11 @@ public class OrderController {
   private ProductOrderRepository productOrderRepository;
   @Autowired
   private StockService stockService;
-  
-  private static final Logger log = LoggerFactory.getLogger(SantiagoAndradeInventariosApplication.class);
-  
+    
   @PostMapping(path="/create") // Map ONLY POST Requests
   public @ResponseBody  Order createOrder ( @RequestBody NewOrder obpayload) throws JsonMappingException, JsonProcessingException {
 	ObjectMapper mapper = new ObjectMapper();
 	JsonNode payload = mapper.valueToTree(obpayload);
-	log.info(payload.toString());
 	
 	Iterator<JsonNode> storesit = payload.get("stores").elements();
 	
@@ -66,15 +62,12 @@ public class OrderController {
 	catch(Exception e) {
 		throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Client not exists",e);
 		}
-	
-	log.info(client.toString());
-	
+		
 	Order order = new Order( client );
 	List<ProductOrder> productOrders =  new ArrayList<>();
 	
     while (storesit.hasNext()) {
     	JsonNode storeJson = storesit.next();
-    	log.info(storeJson.toPrettyString());
     	Store store;
     	try {
     		store = storeRepository.findById(storeJson.get("store_id").asInt()).get();
@@ -124,28 +117,26 @@ public class OrderController {
     		product.addStock(-po.getQty());
     		productRepository.save(product);
     		//ADD STOCK ASYNCRONOUS CALL
-    		log.info("ASYNC PREV");
     		stockService.RequestStockAsync(product.getId(),false);
-    		log.info("ASYNC POST");
     	}
     	productOrderRepository.save(po);
     }
     return order;
     //throw new ResponseStatusException( HttpStatus.OK, "OK");
   }
-  
- 
 }
 
+@Schema(hidden = true)
 class NewOrder{
 	public Integer client_id;
 	public NewStores[] stores;
 }
-
+@Schema(hidden = true)
 class NewStores{
 	public Integer store_id;
 	public NewProducts[] products;
 }
+@Schema(hidden = true)
 class NewProducts{
 	public Integer id;
 	public Integer qty;
