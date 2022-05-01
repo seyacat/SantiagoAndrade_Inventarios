@@ -1,28 +1,41 @@
 package com.example.SantiagoAndrade_Inventarios.model;
 
-import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.validation.constraints.NotBlank;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hibernate.annotations.Where;
 
-@Entity 
+@Entity
+@Where(clause = "deleted_at IS NULL")
 public class Client {
   @Id
   @GeneratedValue(strategy=GenerationType.AUTO)
   private Integer id;
+  @NotBlank(message = "CI is mandatory")
   private String ci;
+  @NotBlank(message = "Name is mandatory")
   private String name;
   private String photo;
+  private Date deletedAt;
   
+  @OneToMany(mappedBy="client")
+  private Set<Order> orders;
+
   public Client() {
-	 
+		 
+  }
+  
+  public Client(String name, String ci ) {
+	 this.name = name;
+	 this.ci = ci;
   }
   
   public Integer getId() {
@@ -55,6 +68,18 @@ public class Client {
 
   public void setPhoto(String photo) {
     this.photo = photo;
+  }
+  
+  public Date getDeletedAt() {
+    return deletedAt;
+  }
+
+  public void setDeletedAt(Date deletedAt) {
+    this.deletedAt = deletedAt;
+  }
+  
+  public void delete() {
+    this.deletedAt = new Date();
   }
 
 }

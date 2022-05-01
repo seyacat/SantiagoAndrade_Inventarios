@@ -1,16 +1,10 @@
 package com.example.SantiagoAndrade_Inventarios.model;
 
-import java.math.BigDecimal;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Entity 
 public class Store {

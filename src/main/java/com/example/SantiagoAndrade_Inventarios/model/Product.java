@@ -4,13 +4,9 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.persistence.OneToMany;
 
 @Entity 
 public class Product {
@@ -23,6 +19,12 @@ public class Product {
   
   @ManyToMany(mappedBy = "products")
   Set<Store> stores;
+  
+  @OneToMany(mappedBy = "product")
+  Set<ProductOrder> productOrders;
+  
+  //@ManyToMany(mappedBy = "orders")
+  //Set<ProductOrders>;
 
   public Product() {
 	 
@@ -67,4 +69,9 @@ public class Product {
   public void setStock(Integer stock) {
     this.stock = stock;
   }
+  
+  public void addStock(Integer stock) {
+	this.stock += stock;
+  }
+  
 }
