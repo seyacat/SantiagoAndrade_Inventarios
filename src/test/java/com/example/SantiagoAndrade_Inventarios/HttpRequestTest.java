@@ -104,7 +104,7 @@ public class HttpRequestTest {
     	//ONE PRODUCT ORDER
     	assertThat(postRequest("http://localhost:" + port + "/order/create",
     			"{\"client_id\":1,\"stores\":[{\"store_id\":1,\"products\":[{\"id\":1,\"qty\":8}]}]}",
-    			true)
+    			false)
     			.get("status")
     			.asInt())
     	.isEqualTo(200);
@@ -112,7 +112,7 @@ public class HttpRequestTest {
     	//MULTI PRODUCT STORE ORDER
     	assertThat(postRequest("http://localhost:" + port + "/order/create",
     			"{\"client_id\":1,\"stores\":[{\"store_id\":1,\"products\":[{\"id\":1,\"qty\":2}]},{\"store_id\":2,\"products\":[{\"id\":1,\"qty\":2}]}]}",
-    			true)
+    			false)
     			.get("status")
     			.asInt())
     	.isEqualTo(200);
@@ -124,7 +124,7 @@ public class HttpRequestTest {
     	//ASYNC REQUEST TEST
     	assertThat(postRequest("http://localhost:" + port + "/order/create",
     			"{\"client_id\":1,\"stores\":[{\"store_id\":1,\"products\":[{\"id\":1,\"qty\":13}]}]}",
-    			true)
+    			false)
     			.get("status")
     			.asInt())
     	.isEqualTo(200);
@@ -137,12 +137,20 @@ public class HttpRequestTest {
     	//SYNC REQUEST TEST
     	assertThat(postRequest("http://localhost:" + port + "/order/create",
     			"{\"client_id\":1,\"stores\":[{\"store_id\":1,\"products\":[{\"id\":2,\"qty\":15}]}]}",
-    			true)
+    			false)
     			.get("status")
     			.asInt())
     	.isEqualTo(200);
     	assertThat(productRepository.findById(2).get().getStock()).isEqualTo(3);
     	
+    }
+    
+    @Test
+    public void testReports( ) throws URISyntaxException 
+    {
+    	assertThat(getRequest("http://localhost:" + port + "/report/orders",true).size()).isGreaterThan(0);
+    	
+    	assertThat(getRequest("http://localhost:" + port + "/report/sells",true).size()).isGreaterThan(0);
     }
     
     public JsonNode getRequest( String uri ) {

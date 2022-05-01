@@ -1,5 +1,7 @@
 package com.example.SantiagoAndrade_Inventarios.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -14,16 +16,32 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.SantiagoAndrade_Inventarios.model.Product;
+import com.example.SantiagoAndrade_Inventarios.repository.OrderRepository;
 import com.example.SantiagoAndrade_Inventarios.repository.ProductRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller 
-@RequestMapping(path="/product") 
-public class ProductController {
+@RequestMapping(path="/report") 
+public class ReportController {
   @Autowired         
-  private ProductRepository productRepository;
+  private OrderRepository orderRepository;
   
-  @PostMapping(path="/stock/{id}") // Map ONLY POST Requests
+  @GetMapping(path="/orders")
+  public @ResponseBody String getOrderCountByStoreDate() throws JsonProcessingException {
+	ObjectMapper mapper = new ObjectMapper();
+    return mapper.writeValueAsString(orderRepository.getOrderCountByStoreDate()) ;
+  }
+  
+  @GetMapping(path="/sells")
+  public @ResponseBody JsonNode getCountStoreProduct() throws JsonProcessingException {
+	ObjectMapper mapper = new ObjectMapper();
+	return mapper.valueToTree(orderRepository.getCountStoreProduct()) ;
+    
+  }
+  
+  /*@PostMapping(path="/stock/{id}") // Map ONLY POST Requests
   public @ResponseBody  String updateStock (@PathVariable("id") Integer id, @RequestBody JsonNode payload) {
     Integer stock = payload.get("stock").asInt();
     if( stock==null || stock <= 0 ) {
@@ -44,5 +62,5 @@ public class ProductController {
   @GetMapping(path="/all")
   public @ResponseBody Iterable<Product> getAllProducts() {
     return productRepository.findAll();
-  }
+  }*/
 }
