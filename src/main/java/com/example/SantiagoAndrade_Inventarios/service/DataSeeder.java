@@ -1,21 +1,20 @@
-package com.example.SantiagoAndrade_Inventarios.component;
+package com.example.SantiagoAndrade_Inventarios.service;
 
 import java.util.Iterator;
 
 import javax.annotation.PostConstruct;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.example.SantiagoAndrade_Inventarios.SantiagoAndradeInventariosApplication;
+import com.example.SantiagoAndrade_Inventarios.model.Client;
 import com.example.SantiagoAndrade_Inventarios.model.Product;
 import com.example.SantiagoAndrade_Inventarios.model.Store;
+import com.example.SantiagoAndrade_Inventarios.repository.ClientRepository;
+import com.example.SantiagoAndrade_Inventarios.controller.ClientController;
 import com.example.SantiagoAndrade_Inventarios.repository.ProductRepository;
 import com.example.SantiagoAndrade_Inventarios.repository.StoreRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,11 +22,13 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@Component
+@Service
 public class DataSeeder {
 	
 	@Autowired
 	private RestTemplate restTemplate;
+	@Autowired
+	private ClientRepository clientRepository;
 	@Autowired
 	private ProductRepository productRepository;
 	@Autowired
@@ -39,11 +40,17 @@ public class DataSeeder {
 	@PostConstruct
 	public void runAfterObjectCreated() throws JsonMappingException, JsonProcessingException {
 		
+		//GENERATE CLIENTS
+		
+		if( clientRepository.findByCi("1700000000").size() == 0 ) {
+			clientRepository.save(new Client("Juan Perez","1700000000"));
+		}
+	
 		//GENERATE STORES
 		storeRepository.save ( new Store( 1, "T001" , "Don Pepe" ) );
 		storeRepository.save ( new Store( 2, "T002", "Mi Tiendita Cool" ) );
 		storeRepository.save ( new Store( 3, "T003", "Todo a Dolar" ) );
-		storeRepository.save ( new Store( 4, "T004", "El Ofertón" ) );
+		storeRepository.save ( new Store( 4, "T004", "El Oferton" ) );
 			
 		//RETRIVE PRODUCTS FROM EXTERNAL MOCH.IO
 	    ObjectMapper mapper = new ObjectMapper();
@@ -91,5 +98,4 @@ public class DataSeeder {
 	    storeRepository.save(store3);
 		
 	}
-
 }
