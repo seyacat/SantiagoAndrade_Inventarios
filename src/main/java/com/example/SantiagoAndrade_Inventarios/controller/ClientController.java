@@ -5,18 +5,15 @@ import java.util.List;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,8 +23,6 @@ import com.example.SantiagoAndrade_Inventarios.model.Client;
 import com.example.SantiagoAndrade_Inventarios.repository.ClientRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller 
 @RequestMapping(path="/client") 
@@ -62,14 +57,15 @@ public class ClientController {
   }
   
   @PostMapping(path="/create") 
-  public @ResponseBody  Client createClient ( @RequestBody String payload ) throws JsonMappingException, JsonProcessingException {
-	ObjectMapper mapper = new ObjectMapper();
-	Client client;
+  public @ResponseBody  Client createClient ( @Valid @RequestBody NewClient newclient ) throws JsonMappingException, JsonProcessingException {
+	//ObjectMapper mapper = new ObjectMapper();
+	/*Client client;
 	try {
 		client = mapper.readValue(payload.toString(),Client.class);
 	}catch(Exception e) {
 		throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Validation Fail",e);
-	}
+	}*/
+	Client client = new Client( newclient.ci,newclient.name,newclient.photo );
 	Set<ConstraintViolation<Client>> violations = validator.validate(client);
 	if (!violations.isEmpty()) {
 		throw new ResponseStatusException( HttpStatus.BAD_REQUEST, violations.toString());
@@ -84,16 +80,16 @@ public class ClientController {
   
 
   @PostMapping(path="/update/{id}") 
-  public @ResponseBody  Client updateClient ( @PathVariable("id") Integer id, @RequestBody JsonNode payload) throws JsonMappingException, JsonProcessingException {
+  public @ResponseBody  Client updateClient ( @PathVariable("id") Integer id, @RequestBody UpdateClient newclient) throws JsonMappingException, JsonProcessingException {
 	  Client client;
 	  try {
 		  client = clientRepository.findById(id).get();
 	  }catch(Exception e) {
 		  throw new ResponseStatusException( HttpStatus.NOT_FOUND, "Client not found");
 	  }
-	  JsonNode photo =  payload.get("photo");
+	  String photo =  newclient.photo;
 	  if( photo != null ) {
-		  client.setPhoto(photo.asText());
+		  client.setPhoto(photo);
 	  }
 	  clientRepository.save(client);
 	  throw new ResponseStatusException( HttpStatus.OK, "OK");
@@ -107,4 +103,13 @@ public class ClientController {
 	 throw new ResponseStatusException( HttpStatus.OK, "OK");
   }
 
+}
+
+class NewClient{
+	public String ci;
+	public String name;
+	public String photo;
+}
+class UpdateClient{
+	public String photo;
 }

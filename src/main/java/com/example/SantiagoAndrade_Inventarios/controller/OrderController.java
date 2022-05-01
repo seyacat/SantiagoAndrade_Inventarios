@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,6 +31,7 @@ import com.example.SantiagoAndrade_Inventarios.service.StockService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Controller 
 @RequestMapping(path="/order") 
@@ -52,10 +52,10 @@ public class OrderController {
   private static final Logger log = LoggerFactory.getLogger(SantiagoAndradeInventariosApplication.class);
   
   @PostMapping(path="/create") // Map ONLY POST Requests
-  public @ResponseBody  ResponseEntity<String> createOrder ( @RequestBody JsonNode payload) throws JsonMappingException, JsonProcessingException {
-	//ObjectMapper mapper = new ObjectMapper();
+  public @ResponseBody  Order createOrder ( @RequestBody NewOrder obpayload) throws JsonMappingException, JsonProcessingException {
+	ObjectMapper mapper = new ObjectMapper();
+	JsonNode payload = mapper.valueToTree(obpayload);
 	log.info(payload.toString());
-	log.info(payload.path("client_id").toString());
 	
 	Iterator<JsonNode> storesit = payload.get("stores").elements();
 	
@@ -97,6 +97,9 @@ public class OrderController {
         	}
         	
         	Integer qty = prodJson.get("qty").asInt();
+        	if( qty <= 0 ) {
+        		throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Quiantity Error");
+        	}
         	if( product.getStock() - qty < -10 ) {
         		throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Unidades no disponibles");
         	}
@@ -127,9 +130,24 @@ public class OrderController {
     	}
     	productOrderRepository.save(po);
     }
-    
-    throw new ResponseStatusException( HttpStatus.OK, "OK");
+    return order;
+    //throw new ResponseStatusException( HttpStatus.OK, "OK");
   }
   
  
 }
+
+class NewOrder{
+	public Integer client_id;
+	public NewStores[] stores;
+}
+
+class NewStores{
+	public Integer store_id;
+	public NewProducts[] products;
+}
+class NewProducts{
+	public Integer id;
+	public Integer qty;
+}
+//{\"client_id\":1,\"stores\":[{\"store_id\":1,\"products\":[{\"id\":1,\"qty\":8}]}]}

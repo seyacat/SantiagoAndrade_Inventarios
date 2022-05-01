@@ -10,14 +10,12 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseEntity;
 
 import com.example.SantiagoAndrade_Inventarios.repository.ProductRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.net.URI;
 import java.net.URISyntaxException;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -66,8 +64,7 @@ public class HttpRequestTest {
         assertThat(getRequest(uri).size()).isGreaterThan(0);        
     }
     
-    @SuppressWarnings("unused")
-	@Test
+    @Test
     public void testCrudClient( ) throws URISyntaxException 
     {
     	assertThat(getRequest("http://localhost:" + port + "/client/id/1").get("id").asInt()).isEqualTo(1);
@@ -105,17 +102,17 @@ public class HttpRequestTest {
     	assertThat(postRequest("http://localhost:" + port + "/order/create",
     			"{\"client_id\":1,\"stores\":[{\"store_id\":1,\"products\":[{\"id\":1,\"qty\":8}]}]}",
     			false)
-    			.get("status")
+    			.get("id")
     			.asInt())
-    	.isEqualTo(200);
+    	.isNotNull();
     	
     	//MULTI PRODUCT STORE ORDER
     	assertThat(postRequest("http://localhost:" + port + "/order/create",
     			"{\"client_id\":1,\"stores\":[{\"store_id\":1,\"products\":[{\"id\":1,\"qty\":2}]},{\"store_id\":2,\"products\":[{\"id\":1,\"qty\":2}]}]}",
     			false)
-    			.get("status")
+    			.get("id")
     			.asInt())
-    	.isEqualTo(200);
+    	.isNotNull();
     	
     	//SET STOCKS TO 10 PRODUCT 1
     	assertThat(postRequest("http://localhost:" + port +"/product/stock/1","{\"stock\":10}").get("status").asInt())
@@ -125,9 +122,9 @@ public class HttpRequestTest {
     	assertThat(postRequest("http://localhost:" + port + "/order/create",
     			"{\"client_id\":1,\"stores\":[{\"store_id\":1,\"products\":[{\"id\":1,\"qty\":13}]}]}",
     			false)
-    			.get("status")
+    			.get("id")
     			.asInt())
-    	.isEqualTo(200);
+    	.isNotNull();
     	assertThat(productRepository.findById(1).get().getStock()).isEqualTo(-3);
     	
     	//SET STOCKS TO 8 PRODUCT 2
@@ -138,9 +135,9 @@ public class HttpRequestTest {
     	assertThat(postRequest("http://localhost:" + port + "/order/create",
     			"{\"client_id\":1,\"stores\":[{\"store_id\":1,\"products\":[{\"id\":2,\"qty\":15}]}]}",
     			false)
-    			.get("status")
+    			.get("id")
     			.asInt())
-    	.isEqualTo(200);
+    	.isNotNull();
     	assertThat(productRepository.findById(2).get().getStock()).isEqualTo(3);
     	
     }

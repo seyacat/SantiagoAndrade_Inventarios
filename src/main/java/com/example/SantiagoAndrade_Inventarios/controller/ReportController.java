@@ -11,34 +11,23 @@ import javax.persistence.Id;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.example.SantiagoAndrade_Inventarios.SantiagoAndradeInventariosApplication;
-import com.example.SantiagoAndrade_Inventarios.model.Product;
-import com.example.SantiagoAndrade_Inventarios.repository.OrderRepository;
-import com.example.SantiagoAndrade_Inventarios.repository.ProductRepository;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Entity
 @Table(name="reports")
@@ -86,7 +75,8 @@ public class ReportController {
   
   private static final Logger log = LoggerFactory.getLogger(SantiagoAndradeInventariosApplication.class);
   
-  @GetMapping(path="/orders")
+  @SuppressWarnings("unchecked")
+@GetMapping(path="/orders")
   public @ResponseBody List<Orders> getOrderCountByStoreDate() throws JsonProcessingException {
 	  Query query = em.createNativeQuery(  "select md5(CONCAT(s.id,\"_\",date(o.date))) as id,  count(*) as count, s.name as store , date(o.date) as date from product_order po\r\n"
 				+ "left join order_ o on po.order_id = o.id \r\n"
@@ -96,7 +86,8 @@ public class ReportController {
 	  return  query.getResultList() ;
   }
   
-  @GetMapping(path="/sells")
+  @SuppressWarnings("unchecked")
+@GetMapping(path="/sells")
   public @ResponseBody List<Sells> getCountStoreProduct() throws JsonProcessingException {
 	  Query query = em.createNativeQuery(  "select md5(CONCAT(s.id,\"_\",p.id)) as id,  s.name as store, count(*) as count, p.cod, p.name as product  from product_order po\r\n"
 				+ "left join product p on po.product_id = p.id \r\n"
@@ -108,7 +99,8 @@ public class ReportController {
     
   }
   
-  @GetMapping(path="/csv")
+  @SuppressWarnings("unchecked")
+@GetMapping(path="/csv")
   public void getOrdersDetail(HttpServletResponse servletResponse, @RequestParam("start") String start,@RequestParam("end") String end) throws IOException {
 	  
 	  

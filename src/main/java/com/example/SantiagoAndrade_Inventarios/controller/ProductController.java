@@ -1,31 +1,36 @@
 package com.example.SantiagoAndrade_Inventarios.controller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.example.SantiagoAndrade_Inventarios.SantiagoAndradeInventariosApplication;
 import com.example.SantiagoAndrade_Inventarios.model.Product;
 import com.example.SantiagoAndrade_Inventarios.repository.ProductRepository;
-import com.fasterxml.jackson.databind.JsonNode;
+
 
 @Controller 
 @RequestMapping(path="/product") 
 public class ProductController {
+	
+	private static final Logger log = LoggerFactory.getLogger(SantiagoAndradeInventariosApplication.class);
+	
   @Autowired         
   private ProductRepository productRepository;
   
   @PostMapping(path="/stock/{id}") // Map ONLY POST Requests
-  public @ResponseBody  String updateStock (@PathVariable("id") Integer id, @RequestBody JsonNode payload) {
-    Integer stock = payload.get("stock").asInt();
+  
+  public @ResponseBody  String updateStock (@PathVariable("id") Integer id, @RequestBody Stock payload) {
+    Integer stock = payload.stock;
     if( stock==null || stock <= 0 ) {
     	throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Invalid Stock");
     }
@@ -45,4 +50,8 @@ public class ProductController {
   public @ResponseBody Iterable<Product> getAllProducts() {
     return productRepository.findAll();
   }
+}
+
+class Stock{
+	public Integer stock;
 }

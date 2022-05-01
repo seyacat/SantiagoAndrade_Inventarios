@@ -3,7 +3,6 @@ package com.example.SantiagoAndrade_Inventarios.model;
 import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -12,6 +11,8 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.Where;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Where(clause = "deleted_at IS NULL")
@@ -24,13 +25,18 @@ public class Client {
   @NotBlank(message = "Name is mandatory")
   private String name;
   private String photo;
+  @JsonIgnore
   private Date deletedAt;
   
   @OneToMany(mappedBy="client")
   private Set<Order> orders;
+  
+  public Client() {}
 
-  public Client() {
-		 
+  public Client(String ci, String name, String photo) {
+		 this.ci = ci;
+		 this.name= name;
+		 this.photo=photo;
   }
   
   public Client(String name, String ci ) {
