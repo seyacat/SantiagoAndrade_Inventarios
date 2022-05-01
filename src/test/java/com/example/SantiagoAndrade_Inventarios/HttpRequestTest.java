@@ -148,9 +148,16 @@ public class HttpRequestTest {
     @Test
     public void testReports( ) throws URISyntaxException 
     {
-    	assertThat(getRequest("http://localhost:" + port + "/report/orders",true).size()).isGreaterThan(0);
+    	assertThat(getRequest("http://localhost:" + port + "/report/orders",false).size()).isGreaterThan(0);
     	
-    	assertThat(getRequest("http://localhost:" + port + "/report/sells",true).size()).isGreaterThan(0);
+    	assertThat(getRequest("http://localhost:" + port + "/report/sells",false).size()).isGreaterThan(0);
+    	
+    	//TEST CSV
+    	assertThat(getStringRequest("http://localhost:" + port + "/report/csv?start=2022-05-01&end=2022-05-02",false)).isNotBlank();
+    	assertThat(getStringRequest("http://localhost:" + port + "/report/csv?start=2022-04-01&end=2022-04-02",false)).isNotBlank();
+    	assertThat(getRequest("http://localhost:" + port + "/report/csv?start=hola&end=mundo",false).get("status").asInt()).isEqualTo(400);
+    	assertThat(getRequest("http://localhost:" + port + "/report/csv?start=2022-05-01",false).get("status").asInt()).isEqualTo(400);
+    	assertThat(getRequest("http://localhost:" + port + "/report/csv?end=2022-05-01",false).get("status").asInt()).isEqualTo(400);
     }
     
     public JsonNode getRequest( String uri ) {
@@ -181,6 +188,15 @@ public class HttpRequestTest {
             log.info(result.toPrettyString());
     	}       
         return result;
+    }
+    
+    public String getStringRequest( String uri, Boolean printLog ) {
+    	String result = this.restTemplate.getForObject(uri, String.class);
+    	if(printLog) {
+    		log.info(uri);
+    		log.info(result);
+    	}
+    	return result;	
     }
    
 	
