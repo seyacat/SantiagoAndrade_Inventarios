@@ -150,11 +150,12 @@ public class HttpRequestTest {
     	assertThat(getRequest("http://localhost:" + port + "/report/sells",false).size()).isGreaterThan(0);
     	
     	//TEST CSV
-    	assertThat(getStringRequest("http://localhost:" + port + "/report/csv?start=2022-05-01&end=2022-05-02",false)).isNotBlank();
-    	assertThat(getStringRequest("http://localhost:" + port + "/report/csv?start=2022-04-01&end=2022-04-02",false)).isNotBlank();
-    	assertThat(getRequest("http://localhost:" + port + "/report/csv?start=hola&end=mundo",false).get("status").asInt()).isEqualTo(400);
-    	assertThat(getRequest("http://localhost:" + port + "/report/csv?start=2022-05-01",false).get("status").asInt()).isEqualTo(400);
-    	assertThat(getRequest("http://localhost:" + port + "/report/csv?end=2022-05-01",false).get("status").asInt()).isEqualTo(400);
+    	assertThat(getStringRequest("http://localhost:" + port + "/report/csv/1?start=2022-05-01&end=2022-05-02",false)).isNotBlank();
+    	assertThat(getStringRequest("http://localhost:" + port + "/report/csv/1?start=2022-04-01&end=2022-04-02",false)).isNotBlank();
+    	assertThat(getRequest("http://localhost:" + port + "/report/csv/1?start=hola&end=mundo",false).get("status").asInt()).isEqualTo(400);
+    	assertThat(getRequest("http://localhost:" + port + "/report/csv/1?start=2022-05-01",false).get("status").asInt()).isEqualTo(400);
+    	assertThat(getRequest("http://localhost:" + port + "/report/csv/1?end=2022-05-01",false).get("status").asInt()).isEqualTo(400);
+    	assertThat(getRequest("http://localhost:" + port + "/report/csv/-1?start=2022-04-01&end=2022-04-02",false).get("status").asInt()).isEqualTo(404);
     }
     
     public JsonNode getRequest( String uri ) {

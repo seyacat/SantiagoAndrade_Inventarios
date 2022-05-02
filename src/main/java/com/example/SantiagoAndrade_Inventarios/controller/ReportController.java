@@ -13,20 +13,17 @@ import javax.persistence.Query;
 import javax.persistence.Table;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.example.SantiagoAndrade_Inventarios.SantiagoAndradeInventariosApplication;
-
+import com.example.SantiagoAndrade_Inventarios.repository.ClientRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Entity
@@ -68,12 +65,12 @@ class OrderDetail{
 @Controller 
 @RequestMapping(path="/report") 
 public class ReportController {
-  @Autowired         
-  
+  @Autowired          
   @PersistenceContext
   EntityManager em;
-  
-  private static final Logger log = LoggerFactory.getLogger(SantiagoAndradeInventariosApplication.class);
+
+  @Autowired         
+  private ClientRepository clientRepository;
   
   @SuppressWarnings("unchecked")
   @GetMapping(path="/orders")
@@ -100,17 +97,20 @@ public class ReportController {
   }
   
   @SuppressWarnings("unchecked")
-  @GetMapping(path="/csv")
-  public @ResponseBody void getOrdersDetail(HttpServletResponse servletResponse, @RequestParam("start") String start,@RequestParam("end") String end) throws IOException {
-	  
+  @GetMapping(path="/csv/{id}")
+  public @ResponseBody void getOrdersDetail(HttpServletResponse servletResponse, @PathVariable("id") Integer id, @RequestParam("start") String start,@RequestParam("end") String end) throws IOException {
+	  try {
+		  clientRepository.findById(id).get();
+	  }catch(Exception e) {
+		  throw new ResponseStatusException( HttpStatus.NOT_FOUND, "Client not found");
+	  }
 	  
 	  LocalDate startDate;
 	  LocalDate endDate;
 	  try {
 		  startDate = LocalDate.parse(start);
 		  endDate = LocalDate.parse(end);
-		  log.info( startDate.format(DateTimeFormatter.ISO_DATE) );
-		  log.info( endDate.format(DateTimeFormatter.ISO_DATE) );
+		  
 	  }catch(Exception e) {
 		  throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Wrong Dates");
 	  }
@@ -121,9 +121,11 @@ public class ReportController {
 	  		+ "left join order_ o on po.order_id = o.id \r\n"
 	  		+ "left join store s on po.store_id = s.id \r\n"
 	  		+ "where DATE(o.date) >= :startdate && DATE(o.date) <= :enddate \r\n"
+	  		+ " and order.client_id = :clientid "
 	  		+ "order by o.date",OrderDetail.class); 
 	   query.setParameter("startdate",startDate.format(DateTimeFormatter.ISO_DATE) );
 	   query.setParameter("enddate",endDate.format(DateTimeFormatter.ISO_DATE) );
+	   query.setParameter("clientid",id );
 	   List<OrderDetail> orderDetails =  query.getResultList();
 	   
 	   servletResponse.setContentType("text/csv");
