@@ -76,7 +76,7 @@ public class ReportController {
   private static final Logger log = LoggerFactory.getLogger(SantiagoAndradeInventariosApplication.class);
   
   @SuppressWarnings("unchecked")
-@GetMapping(path="/orders")
+  @GetMapping(path="/orders")
   public @ResponseBody List<Orders> getOrderCountByStoreDate() throws JsonProcessingException {
 	  Query query = em.createNativeQuery(  "select md5(CONCAT(s.id,\"_\",date(o.date))) as id,  count(*) as count, s.name as store , date(o.date) as date from product_order po\r\n"
 				+ "left join order_ o on po.order_id = o.id \r\n"
@@ -87,7 +87,7 @@ public class ReportController {
   }
   
   @SuppressWarnings("unchecked")
-@GetMapping(path="/sells")
+  @GetMapping(path="/sells")
   public @ResponseBody List<Sells> getCountStoreProduct() throws JsonProcessingException {
 	  Query query = em.createNativeQuery(  "select md5(CONCAT(s.id,\"_\",p.id)) as id,  s.name as store, count(*) as count, p.cod, p.name as product  from product_order po\r\n"
 				+ "left join product p on po.product_id = p.id \r\n"
@@ -100,8 +100,8 @@ public class ReportController {
   }
   
   @SuppressWarnings("unchecked")
-@GetMapping(path="/csv")
-  public void getOrdersDetail(HttpServletResponse servletResponse, @RequestParam("start") String start,@RequestParam("end") String end) throws IOException {
+  @GetMapping(path="/csv")
+  public @ResponseBody void getOrdersDetail(HttpServletResponse servletResponse, @RequestParam("start") String start,@RequestParam("end") String end) throws IOException {
 	  
 	  
 	  LocalDate startDate;
@@ -135,11 +135,7 @@ public class ReportController {
     	   servletResponse.getWriter().write(row.id+","+row.order_id+","+row.store+","+row.store_cod+","+
     			   	row.product+","+row.product_cod+","+row.stock_at_time+","+row.qty+","+row.date+"\n");
        }
-       
-      
-	 
-       
-    
+         
     
   }
   
