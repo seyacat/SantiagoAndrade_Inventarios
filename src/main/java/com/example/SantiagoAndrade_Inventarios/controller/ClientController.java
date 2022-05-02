@@ -24,85 +24,86 @@ import com.example.SantiagoAndrade_Inventarios.repository.ClientRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
-@Controller 
-@RequestMapping(path="/client") 
+@Controller
+@RequestMapping(path = "/client")
 public class ClientController {
 	@Autowired
 	Validator validator;
-	
-  @Autowired         
-  private ClientRepository clientRepository;
-  
-  @GetMapping(path="/list")
-  public @ResponseBody Iterable<Client> getListClients() {
-    return clientRepository.findAll();
-  }
-  
-  @GetMapping(path="/id/{id}")
-  public @ResponseBody Client getClientById(@PathVariable("id") Integer id) {
-	try {
-		return clientRepository.findById(id).get();
-	}
-	catch(Exception e) {
-		throw new ResponseStatusException( HttpStatus.NOT_FOUND, "Client not found",e);
-	}
-  }
-  @GetMapping(path="/ci/{ci}")
-  public @ResponseBody Client getClientByCi(@PathVariable("ci") String ci) {
-	List<Client> clients = clientRepository.findByCi(ci);
-	if( clients.size() > 0 ) {
-		return clients.get(0);
-	}
-	throw new ResponseStatusException( HttpStatus.NOT_FOUND, "Client not found");
-  }
-  
-  @PostMapping(path="/create") 
-  public @ResponseBody  Client createClient ( @Valid @RequestBody NewClient newclient ) throws JsonMappingException, JsonProcessingException {
-	Client client = new Client( newclient.ci,newclient.name,newclient.photo );
-	Set<ConstraintViolation<Client>> violations = validator.validate(client);
-	if (!violations.isEmpty()) {
-		throw new ResponseStatusException( HttpStatus.BAD_REQUEST, violations.toString());
-	  //throw new ConstraintViolationException(violations);
-	}
-	if(clientRepository.findByCi(client.getCi()).size() > 0){
-		throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Client Duplicated");
-	}
-	clientRepository.save(client);
-	return client;
-  }
-  
 
-  @PostMapping(path="/update/{id}") 
-  public @ResponseBody  Client updateClient ( @PathVariable("id") Integer id, @RequestBody UpdateClient newclient) throws JsonMappingException, JsonProcessingException {
-	  Client client;
-	  try {
-		  client = clientRepository.findById(id).get();
-	  }catch(Exception e) {
-		  throw new ResponseStatusException( HttpStatus.NOT_FOUND, "Client not found");
-	  }
-	  String photo =  newclient.photo;
-	  if( photo != null ) {
-		  client.setPhoto(photo);
-	  }
-	  clientRepository.save(client);
-	  throw new ResponseStatusException( HttpStatus.OK, "OK");
-  }
-  
-  @GetMapping(path="/delete/{id}") 
-  public @ResponseBody  void deleteClient (@PathVariable("id") Integer id )  {
-	 Client client = clientRepository.findById(id).get();
-	 client.setDeletedAt( new Date() );
-	 clientRepository.save(client);
-	 throw new ResponseStatusException( HttpStatus.OK, "OK");
-  }
+	@Autowired
+	private ClientRepository clientRepository;
+
+	@GetMapping(path = "/list")
+	public @ResponseBody Iterable<Client> getListClients() {
+		return clientRepository.findAll();
+	}
+
+	@GetMapping(path = "/id/{id}")
+	public @ResponseBody Client getClientById(@PathVariable("id") Integer id) {
+		try {
+			return clientRepository.findById(id).get();
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found", e);
+		}
+	}
+
+	@GetMapping(path = "/ci/{ci}")
+	public @ResponseBody Client getClientByCi(@PathVariable("ci") String ci) {
+		List<Client> clients = clientRepository.findByCi(ci);
+		if (clients.size() > 0) {
+			return clients.get(0);
+		}
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found");
+	}
+
+	@PostMapping(path = "/create")
+	public @ResponseBody Client createClient(@Valid @RequestBody NewClient newclient)
+			throws JsonMappingException, JsonProcessingException {
+		Client client = new Client(newclient.ci, newclient.name, newclient.photo);
+		Set<ConstraintViolation<Client>> violations = validator.validate(client);
+		if (!violations.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, violations.toString());
+		}
+		if (clientRepository.findByCi(client.getCi()).size() > 0) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Client Duplicated");
+		}
+		clientRepository.save(client);
+		return client;
+	}
+
+	@PostMapping(path = "/update/{id}")
+	public @ResponseBody Client updateClient(@PathVariable("id") Integer id, @RequestBody UpdateClient newclient)
+			throws JsonMappingException, JsonProcessingException {
+		Client client;
+		try {
+			client = clientRepository.findById(id).get();
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found");
+		}
+		String photo = newclient.photo;
+		if (photo != null) {
+			client.setPhoto(photo);
+		}
+		clientRepository.save(client);
+		throw new ResponseStatusException(HttpStatus.OK, "OK");
+	}
+
+	@GetMapping(path = "/delete/{id}")
+	public @ResponseBody void deleteClient(@PathVariable("id") Integer id) {
+		Client client = clientRepository.findById(id).get();
+		client.setDeletedAt(new Date());
+		clientRepository.save(client);
+		throw new ResponseStatusException(HttpStatus.OK, "OK");
+	}
 
 }
 
-class NewClient{
+class NewClient {
 	public String ci;
 	public String name;
 	public String photo;
 }
-class UpdateClient{
+
+class UpdateClient {
 	public String photo;
 }

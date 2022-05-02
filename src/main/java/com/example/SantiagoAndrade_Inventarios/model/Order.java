@@ -12,43 +12,40 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="order_")
+@Table(name = "order_")
 public class Order {
-	
-  @Id
-  @GeneratedValue(strategy=GenerationType.AUTO)
-  private Integer id;
-  
-  @ManyToOne()
-  private Client client;
-  
-  
-  @OneToMany(mappedBy = "order")
-  Set<ProductOrder> productOrders;
-  
-  private Date date;
-  
-  public Order(Client client) {
-	 this.client = client;
-	 this.date = new Date();
-  }
 
-  public Integer getId() {
-    return id;
-  }
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer id;
 
-  public void setId(Integer id) {
-    this.id = id;
-  }
+	@ManyToOne()
+	private Client client;
 
-  
-  public Date getDate() {
-    return date;
-  }
+	@OneToMany(mappedBy = "order")
+	Set<ProductOrder> productOrders;
 
-  public void setDate(Date date) {
-    this.date = date;
-  }
+	private Date date;
 
+	public Order(Client client) {
+		this.client = client;
+		this.date = new Date();
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
 
 }

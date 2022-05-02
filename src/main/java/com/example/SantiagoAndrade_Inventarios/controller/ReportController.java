@@ -27,8 +27,8 @@ import com.example.SantiagoAndrade_Inventarios.repository.ClientRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 @Entity
-@Table(name="reports")
-class Orders{
+@Table(name = "reports")
+class Orders {
 	@Id
 	public String id;
 	public Integer count;
@@ -37,8 +37,8 @@ class Orders{
 }
 
 @Entity
-@Table(name="reports")
-class Sells{
+@Table(name = "reports")
+class Sells {
 	@Id
 	public String id;
 	public String store;
@@ -48,8 +48,8 @@ class Sells{
 }
 
 @Entity
-@Table(name="reports")
-class OrderDetail{
+@Table(name = "reports")
+class OrderDetail {
 	@Id
 	public String id;
 	public String order_id;
@@ -62,90 +62,87 @@ class OrderDetail{
 	public String date;
 }
 
-@Controller 
-@RequestMapping(path="/report") 
+@Controller
+@RequestMapping(path = "/report")
 public class ReportController {
-  @Autowired          
-  @PersistenceContext
-  EntityManager em;
+	@Autowired
+	@PersistenceContext
+	EntityManager em;
 
-  @Autowired         
-  private ClientRepository clientRepository;
-  
-  @SuppressWarnings("unchecked")
-  @GetMapping(path="/orders")
-  public @ResponseBody List<Orders> getOrderCountByStoreDate() throws JsonProcessingException {
-	  Query query = em.createNativeQuery(  "select md5(CONCAT(s.id,\"_\",date(o.date))) as id,  count(*) as count, s.name as store , date(o.date) as date from product_order po\r\n"
-				+ "left join order_ o on po.order_id = o.id \r\n"
-				+ "left join store s on po.store_id = s.id \r\n"
-				+ "group by s.id, date(o.date)\r\n"
-				+ "order by s.id, o.date",Orders.class); 
-	  return  query.getResultList() ;
-  }
-  
-  @SuppressWarnings("unchecked")
-  @GetMapping(path="/sells")
-  public @ResponseBody List<Sells> getCountStoreProduct() throws JsonProcessingException {
-	  Query query = em.createNativeQuery(  "select md5(CONCAT(s.id,\"_\",p.id)) as id,  s.name as store, count(*) as count, p.cod, p.name as product  from product_order po\r\n"
-				+ "left join product p on po.product_id = p.id \r\n"
-				+ "left join order_ o on po.order_id = o.id \r\n"
-				+ "left join store s on po.store_id = s.id \r\n"
-				+ "group by p.id,s.id\r\n"
-				+ "order by s.id",Sells.class);  
-	   return  query.getResultList();
-    
-  }
-  
-  @SuppressWarnings("unchecked")
-  @GetMapping(path="/csv/{id}")
-  public @ResponseBody void getOrdersDetail(HttpServletResponse servletResponse, @PathVariable("id") Integer id, @RequestParam("start") String start,@RequestParam("end") String end) throws IOException {
-	  try {
-		  clientRepository.findById(id).get();
-	  }catch(Exception e) {
-		  throw new ResponseStatusException( HttpStatus.NOT_FOUND, "Client not found");
-	  }
-	  
-	  LocalDate startDate;
-	  LocalDate endDate;
-	  try {
-		  startDate = LocalDate.parse(start);
-		  endDate = LocalDate.parse(end);
-		  
-	  }catch(Exception e) {
-		  throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Wrong Dates");
-	  }
-	 
-	  
-	  Query query = em.createNativeQuery(  "select md5(po.id) as id,o.id as order_id, s.name as store, s.cod as store_cod,  p.name as product, p.cod product_cod, p.stock as stock_at_time, po.qty , o.date  from product_order po\r\n"
-	  		+ "left join product p on po.product_id = p.id \r\n"
-	  		+ "left join order_ o on po.order_id = o.id \r\n"
-	  		+ "left join store s on po.store_id = s.id \r\n"
-	  		+ "where DATE(o.date) >= :startdate && DATE(o.date) <= :enddate \r\n"
-	  		+ " and o.client_id = :clientid "
-	  		+ "order by o.date",OrderDetail.class); 
-	   query.setParameter("startdate",startDate.format(DateTimeFormatter.ISO_DATE) );
-	   query.setParameter("enddate",endDate.format(DateTimeFormatter.ISO_DATE) );
-	   query.setParameter("clientid",id );
-	   List<OrderDetail> orderDetails =  query.getResultList();
-	   
-	   servletResponse.setContentType("text/csv");
-       servletResponse.addHeader("Content-Disposition","attachment; filename=\"order_detail_client"+id+"_"+
-    		   startDate.format(DateTimeFormatter.ISO_DATE)+"_"+
-    		   endDate.format(DateTimeFormatter.ISO_DATE)+
-    		   ".csv\"");
-       
-       servletResponse.getWriter().write("id,order_id,store,store_code,product,product_cod,stock_as_time,qty,date\n");
-       
-       for(OrderDetail row : orderDetails ) {
-    	   servletResponse.getWriter().write(row.id+","+row.order_id+","+row.store+","+row.store_cod+","+
-    			   	row.product+","+row.product_cod+","+row.stock_at_time+","+row.qty+","+row.date+"\n");
-       }
-         
-    
-  }
-  
-  
- 
-  
+	@Autowired
+	private ClientRepository clientRepository;
+
+	@SuppressWarnings("unchecked")
+	@GetMapping(path = "/orders")
+	public @ResponseBody List<Orders> getOrderCountByStoreDate() throws JsonProcessingException {
+		Query query = em.createNativeQuery(
+				"select md5(CONCAT(s.id,\"_\",date(o.date))) as id,  count(*) as count, s.name as store , date(o.date) as date from product_order po\r\n"
+						+ "left join order_ o on po.order_id = o.id \r\n"
+						+ "left join store s on po.store_id = s.id \r\n" + "group by s.id, date(o.date)\r\n"
+						+ "order by s.id, o.date",
+				Orders.class);
+		return query.getResultList();
+	}
+
+	@SuppressWarnings("unchecked")
+	@GetMapping(path = "/sells")
+	public @ResponseBody List<Sells> getCountStoreProduct() throws JsonProcessingException {
+		Query query = em.createNativeQuery(
+				"select md5(CONCAT(s.id,\"_\",p.id)) as id,  s.name as store, count(*) as count, p.cod, p.name as product  from product_order po\r\n"
+						+ "left join product p on po.product_id = p.id \r\n"
+						+ "left join order_ o on po.order_id = o.id \r\n"
+						+ "left join store s on po.store_id = s.id \r\n" + "group by p.id,s.id\r\n" + "order by s.id",
+				Sells.class);
+		return query.getResultList();
+
+	}
+
+	@SuppressWarnings("unchecked")
+	@GetMapping(path = "/csv/{id}")
+	public @ResponseBody void getOrdersDetail(HttpServletResponse servletResponse, @PathVariable("id") Integer id,
+			@RequestParam("start") String start, @RequestParam("end") String end) throws IOException {
+		try {
+			clientRepository.findById(id).get();
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Client not found");
+		}
+
+		LocalDate startDate;
+		LocalDate endDate;
+		try {
+			startDate = LocalDate.parse(start);
+			endDate = LocalDate.parse(end);
+
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong Dates");
+		}
+
+		Query query = em.createNativeQuery(
+				"select md5(po.id) as id,o.id as order_id, s.name as store, s.cod as store_cod,  p.name as product, p.cod product_cod, p.stock as stock_at_time, po.qty , o.date  from product_order po\r\n"
+						+ "left join product p on po.product_id = p.id \r\n"
+						+ "left join order_ o on po.order_id = o.id \r\n"
+						+ "left join store s on po.store_id = s.id \r\n"
+						+ "where DATE(o.date) >= :startdate && DATE(o.date) <= :enddate \r\n"
+						+ " and o.client_id = :clientid " + "order by o.date",
+				OrderDetail.class);
+		query.setParameter("startdate", startDate.format(DateTimeFormatter.ISO_DATE));
+		query.setParameter("enddate", endDate.format(DateTimeFormatter.ISO_DATE));
+		query.setParameter("clientid", id);
+		List<OrderDetail> orderDetails = query.getResultList();
+
+		servletResponse.setContentType("text/csv");
+		servletResponse.addHeader("Content-Disposition",
+				"attachment; filename=\"order_detail_client" + id + "_" + startDate.format(DateTimeFormatter.ISO_DATE)
+						+ "_" + endDate.format(DateTimeFormatter.ISO_DATE) + ".csv\"");
+
+		servletResponse.getWriter().write("id,order_id,store,store_code,product,product_cod,stock_as_time,qty,date\n");
+
+		for (OrderDetail row : orderDetails) {
+			servletResponse.getWriter()
+					.write(row.id + "," + row.order_id + "," + row.store + "," + row.store_cod + "," + row.product + ","
+							+ row.product_cod + "," + row.stock_at_time + "," + row.qty + "," + row.date + "\n");
+		}
+
+	}
+
 }
-
