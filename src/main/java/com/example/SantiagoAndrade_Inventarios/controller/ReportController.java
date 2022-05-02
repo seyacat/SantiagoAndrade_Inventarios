@@ -121,7 +121,7 @@ public class ReportController {
 	  		+ "left join order_ o on po.order_id = o.id \r\n"
 	  		+ "left join store s on po.store_id = s.id \r\n"
 	  		+ "where DATE(o.date) >= :startdate && DATE(o.date) <= :enddate \r\n"
-	  		+ " and order.client_id = :clientid "
+	  		+ " and o.client_id = :clientid "
 	  		+ "order by o.date",OrderDetail.class); 
 	   query.setParameter("startdate",startDate.format(DateTimeFormatter.ISO_DATE) );
 	   query.setParameter("enddate",endDate.format(DateTimeFormatter.ISO_DATE) );
@@ -129,7 +129,10 @@ public class ReportController {
 	   List<OrderDetail> orderDetails =  query.getResultList();
 	   
 	   servletResponse.setContentType("text/csv");
-       servletResponse.addHeader("Content-Disposition","attachment; filename=\"order_detail.csv\"");
+       servletResponse.addHeader("Content-Disposition","attachment; filename=\"order_detail_client"+id+"_"+
+    		   startDate.format(DateTimeFormatter.ISO_DATE)+"_"+
+    		   endDate.format(DateTimeFormatter.ISO_DATE)+
+    		   ".csv\"");
        
        servletResponse.getWriter().write("id,order_id,store,store_code,product,product_cod,stock_as_time,qty,date\n");
        

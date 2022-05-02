@@ -58,13 +58,6 @@ public class ClientController {
   
   @PostMapping(path="/create") 
   public @ResponseBody  Client createClient ( @Valid @RequestBody NewClient newclient ) throws JsonMappingException, JsonProcessingException {
-	//ObjectMapper mapper = new ObjectMapper();
-	/*Client client;
-	try {
-		client = mapper.readValue(payload.toString(),Client.class);
-	}catch(Exception e) {
-		throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Validation Fail",e);
-	}*/
 	Client client = new Client( newclient.ci,newclient.name,newclient.photo );
 	Set<ConstraintViolation<Client>> violations = validator.validate(client);
 	if (!violations.isEmpty()) {
